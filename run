@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# Установите в любое значение для вывода отладочной информации
+# Например RUN_DEBUG="yes"
+RUN_DEBUG=""
+
+debug () {
+  if [ $# -ne 1 ]
+  then
+    echo "debug принимает только одну строку как аргумент"
+    exit 1
+  fi
+  if [ -n "$RUN_DEBUG" ]
+  then
+    echo $1
+  fi
+}
+
+if [ $# -ne  1 ]
+then
+  echo "Требуется имя файла первым аргументом"
+  exit 1
+fi
+
+FILEPATH=$1
+FILENAME=$(basename "$FILEPATH")
+# Определяем расширение файла
+# через удаление самой длинной части подстроки,
+# удовлетворяющей регулярному выражению *.
+EXTENSION="${FILENAME##*.}"
+# Определяем имя файла без расширения
+# через удаление с конца самой короткой части подстроки,
+# удовлетворяющей регулярному выражению .*
+FILENAME="${FILENAME%.*}"
+
+IMAGE=""
+
+case $EXTENSION in
+  "js")
+    IMAGE="node:lts-alpine"
+    COMMAND="node /app/$FILENAME.js"
+    ;;
+  "ts")
+    IMAGE="node:lts-alpine"
+    COMMAND="cd /app && npm i typescript &> /dev/null && node_modules/.bin/tsc $FILENAME.ts && node $FILENAME.js"
+    ;;
+  "go")
+    IMAGE="golang:alpine"
+    COMMAND="cd /app && go run $FILENAME.go"
+    ;;
+  "rs")
+    IMAGE="rust:alpine"
+    COMMAND="cd /app && rustc $FILENAME.rs && ./main"
+    ;;
+  "c")
+    IMAGE="gcc:latest"
+    COMMAND="cd /app && gcc -o main $FILENAME.c && ./main"
+    ;;
+  "cpp")
+    IMAGE="gcc:latest"
+    COMMAND="cd /app && g++ -o main $FILENAME.cpp && ./main"
+    ;;
+  "java")
+    IMAGE="openjdk:17"
+    COMMAND="cd /app && javac $FILENAME.java && java $FILENAME"
+    ;;
+esac
+
+if [ -z "$IMAGE" ]
+then
+  echo "Неизвестное расширение файла $EXTENSION"
+  exit 1
+fi
+
+# Debug
+debug "IMAGE=$IMAGE"
+debug "FILEPATH=$FILEPATH"
+debug "FILENAME=$FILENAME"
+debug "EXTENSION=$EXTENSION"
+debug "COMMAND=$COMMAND"
+debug ""
+
+docker run \
+  --rm \
+  -it \
+  -v `pwd`/$FILEPATH:/app/$FILENAME.$EXTENSION \
+  $IMAGE \
+  sh -c "$COMMAND"

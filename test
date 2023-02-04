@@ -1,0 +1,29 @@
+#!/bin/bash
+
+echo "TEST: Run JavaScript test..."
+./run test_sources/main.js
+echo
+
+echo "TEST: Run TypeScript test..."
+./run test_sources/main.ts
+echo
+
+echo "TEST: Run Golang test..."
+./run test_sources/main.go
+echo
+
+echo "TEST: Run Rust test..."
+./run test_sources/main.rs
+echo
+
+echo "TEST: Run C test..."
+./run test_sources/main.c
+echo
+
+echo "TEST: Run C++ test..."
+./run test_sources/main.cpp
+echo
+
+echo "TEST: Run Java test..."
+./run test_sources/HelloWorld.java
+echo
