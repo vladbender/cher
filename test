@@ -16,24 +16,24 @@ echo "TEST: Run Rust test..."
 ./run test_sources/main.rs
 echo
 
-echo "TEST: Run C test..."
-./run test_sources/main.c
-echo
-
-echo "TEST: Run C++ test..."
-./run test_sources/main.cpp
-echo
-
-echo "TEST: Run Java test..."
-./run test_sources/HelloWorld.java
+echo "TEST: Run Python test..."
+./run test_sources/main.py
 echo
 
 echo "TEST: Run Ruby test..."
 ./run test_sources/main.rb
 echo
 
-echo "TEST: Run Python test..."
-./run test_sources/main.py
+echo "TEST: Run Java test..."
+./run test_sources/HelloWorld.java
+echo
+
+echo "TEST: Run C test..."
+./run test_sources/main.c
+echo
+
+echo "TEST: Run C++ test..."
+./run test_sources/main.cpp
 echo
 
 echo "TEST: Run PHP test..."

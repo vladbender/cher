@@ -16,10 +16,38 @@ debug () {
   fi
 }
 
+help () {
+  echo 'Использование: run path/to/file.js'
+  echo ''
+  echo 'Поддерживаемые языки:'
+  echo '  - JavaScript (Node.js)'
+  echo '  - TypeScript (Node.js)'
+  echo '  - Golang'
+  echo '  - Rust'
+  echo '  - Python'
+  echo '  - Ruby'
+  echo '  - Java'
+  echo '  - C/C++'
+  echo '  - PHP'
+}
+
+error () {
+  echo $1
+  echo
+  help
+  exit 1
+}
+
+case $1 in
+  "--help"|"-h")
+    help
+    exit 0
+  ;;
+esac
+
 if [ $# -ne  1 ]
 then
-  echo "Требуется имя файла первым аргументом"
-  exit 1
+  error "Требуется имя файла первым аргументом"
 fi
 
 FILEPATH=$1
@@ -32,8 +60,6 @@ EXTENSION="${FILENAME##*.}"
 # через удаление с конца самой короткой части подстроки,
 # удовлетворяющей регулярному выражению .*
 FILENAME="${FILENAME%.*}"
-
-IMAGE=""
 
 case $EXTENSION in
   "js")
@@ -52,6 +78,18 @@ case $EXTENSION in
     IMAGE="rust:alpine"
     COMMAND="cd /app && rustc $FILENAME.rs && ./main"
     ;;
+  "py")
+    IMAGE="python:alpine"
+    COMMAND="python3 /app/$FILENAME.py"
+    ;;
+  "rb")
+    IMAGE="ruby:alpine"
+    COMMAND="ruby /app/$FILENAME.rb"
+    ;;
+  "java")
+    IMAGE="amazoncorretto:17"
+    COMMAND="cd /app && javac $FILENAME.java && java $FILENAME"
+    ;;
   "c")
     IMAGE="gcc:latest"
     COMMAND="cd /app && gcc -o main $FILENAME.c && ./main"
@@ -60,29 +98,14 @@ case $EXTENSION in
     IMAGE="gcc:latest"
     COMMAND="cd /app && g++ -o main $FILENAME.cpp && ./main"
     ;;
-  "java")
-    IMAGE="amazoncorretto:17"
-    COMMAND="cd /app && javac $FILENAME.java && java $FILENAME"
-    ;;
-  "rb")
-    IMAGE="ruby:alpine"
-    COMMAND="ruby /app/$FILENAME.rb"
-    ;;
-  "py")
-    IMAGE="python:alpine"
-    COMMAND="python3 /app/$FILENAME.py"
-    ;;
   "php")
     IMAGE="php:cli"
     COMMAND="php /app/$FILENAME.php"
     ;;
+  *)
+    error "Неизвестное расширение файла $EXTENSION"
+    ;;
 esac
-
-if [ -z "$IMAGE" ]
-then
-  echo "Неизвестное расширение файла $EXTENSION"
-  exit 1
-fi
 
 # Debug
 debug "IMAGE=$IMAGE"
