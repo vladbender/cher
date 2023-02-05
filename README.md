@@ -29,6 +29,7 @@
 - Rust
 - C/C++
 - Java
+- Ruby
 
 ## TODO
 - [] --help

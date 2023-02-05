@@ -64,6 +64,10 @@ case $EXTENSION in
     IMAGE="openjdk:17"
     COMMAND="cd /app && javac $FILENAME.java && java $FILENAME"
     ;;
+  "rb")
+    IMAGE="ruby:alpine"
+    COMMAND="ruby /app/$FILENAME.rb"
+    ;;
 esac
 
 if [ -z "$IMAGE" ]

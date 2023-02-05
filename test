@@ -27,3 +27,7 @@ echo
 echo "TEST: Run Java test..."
 ./run test_sources/HelloWorld.java
 echo
+
+echo "TEST: Run Ruby test..."
+./run test_sources/main.rb
+echo
