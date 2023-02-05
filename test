@@ -35,3 +35,7 @@ echo
 echo "TEST: Run Python test..."
 ./run test_sources/main.py
 echo
+
+echo "TEST: Run PHP test..."
+./run test_sources/main.php
+echo

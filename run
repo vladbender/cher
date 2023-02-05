@@ -61,7 +61,7 @@ case $EXTENSION in
     COMMAND="cd /app && g++ -o main $FILENAME.cpp && ./main"
     ;;
   "java")
-    IMAGE="openjdk:17"
+    IMAGE="amazoncorretto:17"
     COMMAND="cd /app && javac $FILENAME.java && java $FILENAME"
     ;;
   "rb")
@@ -71,6 +71,10 @@ case $EXTENSION in
   "py")
     IMAGE="python:alpine"
     COMMAND="python3 /app/$FILENAME.py"
+    ;;
+  "php")
+    IMAGE="php:cli"
+    COMMAND="php /app/$FILENAME.php"
     ;;
 esac
 
