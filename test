@@ -31,3 +31,7 @@ echo
 echo "TEST: Run Ruby test..."
 ./run test_sources/main.rb
 echo
+
+echo "TEST: Run Python test..."
+./run test_sources/main.py
+echo

@@ -68,6 +68,10 @@ case $EXTENSION in
     IMAGE="ruby:alpine"
     COMMAND="ruby /app/$FILENAME.rb"
     ;;
+  "py")
+    IMAGE="python:alpine"
+    COMMAND="python3 /app/$FILENAME.py"
+    ;;
 esac
 
 if [ -z "$IMAGE" ]
