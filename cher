@@ -86,7 +86,7 @@ help () {
   echo '    cher sh java'
   echo '    cher sh c'
   echo '    cher sh c++'
-  echo '    cher php'
+  echo '    cher sh php'
 }
 
 error () {
