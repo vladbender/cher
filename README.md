@@ -33,6 +33,15 @@ Hello from Golang!
 /workdir/test_sources$ 
 %
 ```
+
+## Установка
+
+На Linux и MacOS:
+```bash
+sudo curl https://raw.githubusercontent.com/vladislavvv/cher/main/cher --output /usr/local/bin/cher
+sudo chmod +x /usr/local/bin/cher
+```
+
 ## Тесты
 
 Можно запустить тесты с простейшими hello world вариантами.
@@ -63,4 +72,3 @@ Hello from Golang!
 - Работа с относительными и абсолютные путями. В относительных учесть пути "наверх"
 - Поддержка других языков
 - (?) сlean режим для удаления ненужных образов
-- (?) Возможность скачать с github

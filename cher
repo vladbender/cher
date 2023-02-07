@@ -152,6 +152,9 @@ run () {
       IMAGE="php:cli"
       COMMAND="php /app/$FILENAME.php"
       ;;
+    "")
+      error "После run нужно указать путь к файлу"
+      ;;
     *)
       error "Неизвестное расширение файла $EXTENSION"
       ;;
@@ -190,6 +193,9 @@ repl () {
     "php")
       IMAGE="php:cli"
       COMMAND="php -a"
+      ;;
+    "")
+      error "После repl нужно указать язык"
       ;;
     *)
       error "Для языка $1 нет REPL режима"
@@ -231,6 +237,9 @@ shell () {
       ;;
     "php"|"PHP")
       IMAGE="php:cli"
+      ;;
+    "")
+      error "После shell нужно указать язык"
       ;;
     *)
       error "Для языка $1 нет Shell режима"
