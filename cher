@@ -5,125 +5,265 @@
 CHER_DEBUG=""
 
 debug () {
-  if [ $# -ne 1 ]
+  if [[ $# -ne 1 ]]
   then
     echo "debug принимает только одну строку как аргумент"
     exit 1
   fi
-  if [ -n "$CHER_DEBUG" ]
+  if [[ -n "$CHER_DEBUG" ]]
   then
     echo $1
   fi
 }
 
 help () {
-  echo 'Использование: cher path/to/file.js'
+  echo 'Использование: cher [ run | repl | shell ] [OPTIONS]'
   echo ''
-  echo 'Поддерживаемые языки:'
-  echo '  - JavaScript (Node.js)'
-  echo '  - TypeScript (Node.js)'
-  echo '  - Golang'
-  echo '  - Rust'
-  echo '  - Python'
-  echo '  - Ruby'
-  echo '  - Java'
-  echo '  - C/C++'
-  echo '  - PHP'
+  echo 'Команда run:'
+  echo '  Запускает код на выбранном языке программирования'
+  echo '  и выводит результат в консоль'
+  echo ''
+  echo '  cher run path/to/file.js'
+  echo ''
+  echo '  Поддерживаемые языки:'
+  echo '    - JavaScript (Node.js)'
+  echo '    - TypeScript (Node.js)'
+  echo '    - Golang'
+  echo '    - Rust'
+  echo '    - Python'
+  echo '    - Ruby'
+  echo '    - Java'
+  echo '    - C/C++'
+  echo '    - PHP'
+  echo ''
+  echo '  Варианты:'
+  echo '    cher r path/to/file.go'
+  echo ''
+  echo 'Команда repl:'
+  echo '  Запускает REPL (read-eval-print-loop) режим в языках'
+  echo '  которые его имеют'
+  echo ''
+  echo '  cher repl ruby'
+  echo ''
+  echo '  Поддерживаемые языки:'
+  echo '    - JavaScript'
+  echo '    - Python'
+  echo '    - Ruby'
+  echo '    - PHP'
+  echo '  '
+  echo '  Варианты:'
+  echo '    cher repl node'
+  echo '    cher e python'
+  echo '    cher e ruby'
+  echo '    cher e php'
+  echo ''
+  echo 'Команда shell:'
+  echo '  Запускает терминал выбранного языка в контейнере'
+  echo '  с доступом ко всем тулам выбранного языка.'
+  echo '  При этом все файлы текущей директории доступны'
+  echo '  по пути /workdir'
+  echo ''
+  echo '  cher shell rust'
+  echo '  cd /workdir'
+  echo '  rustc ...'
+  echo ''
+  echo '  Поддерживаемые языки:'
+  echo '    - JavaScript (Node.js)'
+  echo '    - Golang'
+  echo '    - Rust'
+  echo '    - Python'
+  echo '    - Ruby'
+  echo '    - Java'
+  echo '    - C/C++'
+  echo '    - PHP'
+  echo ''
+  echo '  Варианты:'
+  echo '    cher shell node'
+  echo '    cher sh go'
+  echo '    cher sh rust'
+  echo '    cher sh python'
+  echo '    cher sh ruby'
+  echo '    cher sh java'
+  echo '    cher sh c'
+  echo '    cher sh c++'
+  echo '    cher php'
 }
 
 error () {
   echo $1
   echo
-  help
+  echo "Для получения справки запустите:"
+  echo "  cher"
+  echo "  cher -h"
+  echo "  cher --help"
   exit 1
 }
 
-if [ $# -eq 0 ]
+run () {
+  FILEPATH=$1
+  FILENAME=$(basename "$FILEPATH")
+  # Определяем расширение файла
+  # через удаление самой длинной части подстроки,
+  # удовлетворяющей регулярному выражению *.
+  EXTENSION="${FILENAME##*.}"
+  # Определяем имя файла без расширения
+  # через удаление с конца самой короткой части подстроки,
+  # удовлетворяющей регулярному выражению .*
+  FILENAME="${FILENAME%.*}"
+
+  case $EXTENSION in
+    "js")
+      IMAGE="node:lts-alpine"
+      COMMAND="node /app/$FILENAME.js"
+      ;;
+    "ts")
+      IMAGE="node:lts-alpine"
+      COMMAND="cd /app && npm i typescript &> /dev/null && node_modules/.bin/tsc $FILENAME.ts && node $FILENAME.js"
+      ;;
+    "go")
+      IMAGE="golang:alpine"
+      COMMAND="cd /app && go run $FILENAME.go"
+      ;;
+    "rs")
+      IMAGE="rust:alpine"
+      COMMAND="cd /app && rustc $FILENAME.rs && ./main"
+      ;;
+    "py")
+      IMAGE="python:alpine"
+      COMMAND="python3 /app/$FILENAME.py"
+      ;;
+    "rb")
+      IMAGE="ruby:alpine"
+      COMMAND="ruby /app/$FILENAME.rb"
+      ;;
+    "java")
+      IMAGE="amazoncorretto:17"
+      COMMAND="cd /app && javac $FILENAME.java && java $FILENAME"
+      ;;
+    "c")
+      IMAGE="gcc:latest"
+      COMMAND="cd /app && gcc -o main $FILENAME.c && ./main"
+      ;;
+    "cpp")
+      IMAGE="gcc:latest"
+      COMMAND="cd /app && g++ -o main $FILENAME.cpp && ./main"
+      ;;
+    "php")
+      IMAGE="php:cli"
+      COMMAND="php /app/$FILENAME.php"
+      ;;
+    *)
+      error "Неизвестное расширение файла $EXTENSION"
+      ;;
+  esac
+
+  # Debug
+  debug "IMAGE=$IMAGE"
+  debug "FILEPATH=$FILEPATH"
+  debug "FILENAME=$FILENAME"
+  debug "EXTENSION=$EXTENSION"
+  debug "COMMAND=$COMMAND"
+  debug ""
+
+  docker run \
+    --rm \
+    -it \
+    -v `pwd`/$FILEPATH:/app/$FILENAME.$EXTENSION \
+    $IMAGE \
+    sh -c "$COMMAND"
+}
+
+repl () {
+  case $1 in
+    "node"|"nodejs"|"node.js"|"js")
+      IMAGE="node:lts-alpine"
+      COMMAND="node"
+      ;;
+    "python"|"python3"|"py")
+      IMAGE="python:alpine"
+      COMMAND="python3"
+      ;;
+    "ruby"|"rb"|"irb")
+      IMAGE="ruby:alpine"
+      COMMAND="irb"
+      ;;
+    "php")
+      IMAGE="php:cli"
+      COMMAND="php -a"
+      ;;
+    *)
+      error "Для языка $1 нет REPL режима"
+      ;;
+  esac
+
+  docker run \
+    --rm \
+    -it \
+    $IMAGE \
+    sh -c "$COMMAND" 
+}
+
+shell () {
+  case $1 in
+    "node"|"nodejs"|"node.js"|"js"|"javascript")
+      IMAGE="node:lts-alpine"
+      ;;
+    "go"|"golang")
+      IMAGE="golang:alpine"
+      ;;
+    "rust"|"rs")
+      IMAGE="rust:alpine"
+      ;;
+    "python"|"python3"|"py")
+      IMAGE="python:alpine"
+      ;;
+    "ruby"|"rb"|"irb")
+      IMAGE="ruby:alpine"
+      ;;
+    "java"|"Java")
+      IMAGE="amazoncorretto:17"
+      ;;
+    "c"|"C")
+      IMAGE="gcc:latest"
+      ;;
+    "c++"|"C++"|"cpp")
+      IMAGE="gcc:latest"
+      ;;
+    "php"|"PHP")
+      IMAGE="php:cli"
+      ;;
+    *)
+      error "Для языка $1 нет Shell режима"
+      ;;
+  esac
+
+  docker run \
+    --rm \
+    -it \
+    -v `pwd`:/workdir \
+    $IMAGE \
+    sh
+}
+
+# Начало выполнения скрипта
+
+if [[ $# -eq 0 || $1 == "-h" || $1 == "--help" ]]
 then
   help
   exit 0
 fi
 
 case $1 in
-  "--help"|"-h")
-    help
-    exit 0
-  ;;
-esac
-
-if [ $# -ne  1 ]
-then
-  error "Требуется имя файла первым аргументом"
-fi
-
-FILEPATH=$1
-FILENAME=$(basename "$FILEPATH")
-# Определяем расширение файла
-# через удаление самой длинной части подстроки,
-# удовлетворяющей регулярному выражению *.
-EXTENSION="${FILENAME##*.}"
-# Определяем имя файла без расширения
-# через удаление с конца самой короткой части подстроки,
-# удовлетворяющей регулярному выражению .*
-FILENAME="${FILENAME%.*}"
-
-case $EXTENSION in
-  "js")
-    IMAGE="node:lts-alpine"
-    COMMAND="node /app/$FILENAME.js"
+  "run"|"r")
+    run $2
     ;;
-  "ts")
-    IMAGE="node:lts-alpine"
-    COMMAND="cd /app && npm i typescript &> /dev/null && node_modules/.bin/tsc $FILENAME.ts && node $FILENAME.js"
+  "repl"|"e")
+    repl $2
     ;;
-  "go")
-    IMAGE="golang:alpine"
-    COMMAND="cd /app && go run $FILENAME.go"
-    ;;
-  "rs")
-    IMAGE="rust:alpine"
-    COMMAND="cd /app && rustc $FILENAME.rs && ./main"
-    ;;
-  "py")
-    IMAGE="python:alpine"
-    COMMAND="python3 /app/$FILENAME.py"
-    ;;
-  "rb")
-    IMAGE="ruby:alpine"
-    COMMAND="ruby /app/$FILENAME.rb"
-    ;;
-  "java")
-    IMAGE="amazoncorretto:17"
-    COMMAND="cd /app && javac $FILENAME.java && java $FILENAME"
-    ;;
-  "c")
-    IMAGE="gcc:latest"
-    COMMAND="cd /app && gcc -o main $FILENAME.c && ./main"
-    ;;
-  "cpp")
-    IMAGE="gcc:latest"
-    COMMAND="cd /app && g++ -o main $FILENAME.cpp && ./main"
-    ;;
-  "php")
-    IMAGE="php:cli"
-    COMMAND="php /app/$FILENAME.php"
+  "shell"|"sh")
+    shell $2
     ;;
   *)
-    error "Неизвестное расширение файла $EXTENSION"
+    error "Неизвестная команда $1"
     ;;
 esac
-
-# Debug
-debug "IMAGE=$IMAGE"
-debug "FILEPATH=$FILEPATH"
-debug "FILENAME=$FILENAME"
-debug "EXTENSION=$EXTENSION"
-debug "COMMAND=$COMMAND"
-debug ""
-
-docker run \
-  --rm \
-  -it \
-  -v `pwd`/$FILEPATH:/app/$FILENAME.$EXTENSION \
-  $IMAGE \
-  sh -c "$COMMAND"
