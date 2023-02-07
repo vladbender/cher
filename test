@@ -1,41 +1,41 @@
 #!/bin/bash
 
 echo "TEST: Run JavaScript test..."
-./run test_sources/main.js
+./cher test_sources/main.js
 echo
 
 echo "TEST: Run TypeScript test..."
-./run test_sources/main.ts
+./cher test_sources/main.ts
 echo
 
 echo "TEST: Run Golang test..."
-./run test_sources/main.go
+./cher test_sources/main.go
 echo
 
 echo "TEST: Run Rust test..."
-./run test_sources/main.rs
+./cher test_sources/main.rs
 echo
 
 echo "TEST: Run Python test..."
-./run test_sources/main.py
+./cher test_sources/main.py
 echo
 
 echo "TEST: Run Ruby test..."
-./run test_sources/main.rb
+./cher test_sources/main.rb
 echo
 
 echo "TEST: Run Java test..."
-./run test_sources/HelloWorld.java
+./cher test_sources/HelloWorld.java
 echo
 
 echo "TEST: Run C test..."
-./run test_sources/main.c
+./cher test_sources/main.c
 echo
 
 echo "TEST: Run C++ test..."
-./run test_sources/main.cpp
+./cher test_sources/main.cpp
 echo
 
 echo "TEST: Run PHP test..."
-./run test_sources/main.php
+./cher test_sources/main.php
 echo

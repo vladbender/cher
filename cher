@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Установите в любое значение для вывода отладочной информации
-# Например RUN_DEBUG="yes"
-RUN_DEBUG=""
+# Например CHER_DEBUG="yes"
+CHER_DEBUG=""
 
 debug () {
   if [ $# -ne 1 ]
@@ -10,14 +10,14 @@ debug () {
     echo "debug принимает только одну строку как аргумент"
     exit 1
   fi
-  if [ -n "$RUN_DEBUG" ]
+  if [ -n "$CHER_DEBUG" ]
   then
     echo $1
   fi
 }
 
 help () {
-  echo 'Использование: run path/to/file.js'
+  echo 'Использование: cher path/to/file.js'
   echo ''
   echo 'Поддерживаемые языки:'
   echo '  - JavaScript (Node.js)'
@@ -37,6 +37,12 @@ error () {
   help
   exit 1
 }
+
+if [ $# -eq 0 ]
+then
+  help
+  exit 0
+fi
 
 case $1 in
   "--help"|"-h")
