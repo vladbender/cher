@@ -101,7 +101,25 @@ error () {
 
 run () {
   FILEPATH=$1
-  FILENAME=$(basename "$FILEPATH")
+
+  if [[ ! -e $FILEPATH ]]
+  then
+    error "Файл $FILEPATH не существует"
+  fi
+
+  if [[ ! -f $FILEPATH ]]
+  then
+    error "$FILEPATH не является файлом"
+  fi
+
+  if [[ $FILEPATH == /* ]]
+  then
+    ABSOLUTE_FILEPATH=$FILEPATH
+  else
+    ABSOLUTE_FILEPATH=$(realpath "`pwd`/$FILEPATH")
+  fi
+
+  FILENAME=$(basename "$ABSOLUTE_FILEPATH")
   # Определяем расширение файла
   # через удаление самой длинной части подстроки,
   # удовлетворяющей регулярному выражению *.
@@ -171,7 +189,7 @@ run () {
   docker run \
     --rm \
     -it \
-    -v `pwd`/$FILEPATH:/app/$FILENAME.$EXTENSION \
+    -v $ABSOLUTE_FILEPATH:/app/$FILENAME.$EXTENSION \
     $IMAGE \
     sh -c "$COMMAND"
 }
