@@ -38,6 +38,8 @@ help () {
   echo ''
   echo '  Варианты:'
   echo '    cher r path/to/file.go'
+  echo '    cher r ../../path/to/file.py'
+  echo '    cher r /usr/tmp/path/to/File.java'
   echo ''
   echo 'Команда repl:'
   echo '  Запускает REPL (read-eval-print-loop) режим в языках'
@@ -67,6 +69,11 @@ help () {
   echo '  cd /workdir'
   echo '  rustc ...'
   echo ''
+  echo '  После языка можно передать привязку портов'
+  echo '  в формате докера - все что принимает параметр -p:'
+  echo ''
+  echo '  cher shell go 3000:4000'
+  echo ''
   echo '  Поддерживаемые языки:'
   echo '    - JavaScript (Node.js)'
   echo '    - Golang'
@@ -78,8 +85,8 @@ help () {
   echo '    - PHP'
   echo ''
   echo '  Варианты:'
-  echo '    cher shell node'
-  echo '    cher sh go'
+  echo '    cher shell node 3000:3000'
+  echo '    cher sh go 3000:8080'
   echo '    cher sh rust'
   echo '    cher sh python'
   echo '    cher sh ruby'
@@ -228,7 +235,10 @@ repl () {
 }
 
 shell () {
-  case $1 in
+  LANGUAGE=$1
+  PORTS=$2
+
+  case $LANGUAGE in
     "node"|"nodejs"|"node.js"|"js"|"javascript")
       IMAGE="node:lts-alpine"
       ;;
@@ -260,14 +270,17 @@ shell () {
       error "После shell нужно указать язык"
       ;;
     *)
-      error "Для языка $1 нет Shell режима"
+      error "Для языка $LANGUAGE нет Shell режима"
       ;;
   esac
 
-  docker run \
-    --rm \
-    -it \
-    -v `pwd`:/workdir \
+  if [[ -n "$PORTS" ]]
+  then
+    MAP_PORTS="-p $PORTS"
+  fi
+
+  docker run --rm -it \
+    -v `pwd`:/workdir $MAP_PORTS \
     $IMAGE \
     sh
 }
@@ -288,7 +301,7 @@ case $1 in
     repl $2
     ;;
   "shell"|"sh")
-    shell $2
+    shell $2 $3
     ;;
   *)
     error "Неизвестная команда $1"
