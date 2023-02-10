@@ -35,6 +35,7 @@ help () {
   echo '    - Java'
   echo '    - C/C++'
   echo '    - PHP'
+  echo '    - Haskell'
   echo ''
   echo '  Варианты:'
   echo '    cher r path/to/file.go'
@@ -52,12 +53,14 @@ help () {
   echo '    - Python'
   echo '    - Ruby'
   echo '    - PHP'
+  echo '    - Haskell'
   echo '  '
   echo '  Варианты:'
   echo '    cher repl node'
   echo '    cher e python'
   echo '    cher e ruby'
   echo '    cher e php'
+  echo '    cher e haskell'
   echo ''
   echo 'Команда shell:'
   echo '  Запускает терминал выбранного языка в контейнере'
@@ -83,6 +86,7 @@ help () {
   echo '    - Java'
   echo '    - C/C++'
   echo '    - PHP'
+  echo '    - Haskell'
   echo ''
   echo '  Варианты:'
   echo '    cher shell node 3000:3000'
@@ -94,6 +98,7 @@ help () {
   echo '    cher sh c'
   echo '    cher sh c++'
   echo '    cher sh php'
+  echo '    cher sh haskell'
 }
 
 error () {
@@ -177,6 +182,10 @@ run () {
       IMAGE="php:cli"
       COMMAND="php /app/$FILENAME.php"
       ;;
+    "hs")
+      IMAGE="haskell:9.4-slim"
+      COMMAND="cd /app && ghc $FILENAME.hs && ./$FILENAME"
+      ;;
     "")
       error "После run нужно указать путь к файлу"
       ;;
@@ -219,6 +228,10 @@ repl () {
       IMAGE="php:cli"
       COMMAND="php -a"
       ;;
+    "haskell"|"hs")
+      IMAGE="haskell:9.4-slim"
+      COMMAND="ghci"
+      ;;
     "")
       error "После repl нужно указать язык"
       ;;
@@ -241,30 +254,43 @@ shell () {
   case $LANGUAGE in
     "node"|"nodejs"|"node.js"|"js"|"javascript")
       IMAGE="node:lts-alpine"
+      SHELL="sh"
       ;;
     "go"|"golang")
       IMAGE="golang:alpine"
+      SHELL="sh"
       ;;
     "rust"|"rs")
       IMAGE="rust:alpine"
+      SHELL="sh"
       ;;
     "python"|"python3"|"py")
       IMAGE="python:alpine"
+      SHELL="sh"
       ;;
     "ruby"|"rb"|"irb")
       IMAGE="ruby:alpine"
+      SHELL="sh"
       ;;
     "java"|"Java")
       IMAGE="amazoncorretto:17"
+      SHELL="bash"
       ;;
     "c"|"C")
       IMAGE="gcc:latest"
+      SHELL="bash"
       ;;
     "c++"|"C++"|"cpp")
       IMAGE="gcc:latest"
+      SHELL="bash"
       ;;
     "php"|"PHP")
       IMAGE="php:cli"
+      SHELL="bash"
+      ;;
+    "haskell"|"hs")
+      IMAGE="haskell:9.4-slim"
+      SHELL="bash"
       ;;
     "")
       error "После shell нужно указать язык"
@@ -282,7 +308,7 @@ shell () {
   docker run --rm -it \
     -v `pwd`:/workdir $MAP_PORTS \
     $IMAGE \
-    sh
+    $SHELL
 }
 
 # Начало выполнения скрипта

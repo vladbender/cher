@@ -39,3 +39,7 @@ echo
 echo "TEST: Run PHP test..."
 ./cher run test_sources/main.php
 echo
+
+echo "TEST: Run Haskell test..."
+./cher run test_sources/main.hs
+echo

@@ -66,6 +66,7 @@ sudo chmod +x /usr/local/bin/cher
 - Java
 - C/C++
 - PHP
+- Haskell
 
 ## TODO
 - Поддержка других языков
