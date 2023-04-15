@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# Установите в любое значение для вывода отладочной информации
-# Например CHER_DEBUG="yes"
+# Set to any value to print debug info
+# e.g. CHER_DEBUG="yes"
 CHER_DEBUG=""
 
 debug () {
   if [[ $# -ne 1 ]]
   then
-    echo "debug принимает только одну строку как аргумент"
+    echo "debug applies only 1 argument"
     exit 1
   fi
   if [[ -n "$CHER_DEBUG" ]]
@@ -17,15 +17,15 @@ debug () {
 }
 
 help () {
-  echo 'Использование: cher [ run | repl | shell ] [OPTIONS]'
+  echo 'Usage: cher [ run | repl | shell ] [OPTIONS]'
   echo ''
-  echo 'Команда run:'
-  echo '  Запускает код на выбранном языке программирования'
-  echo '  и выводит результат в консоль'
+  echo 'run command:'
+  echo '  runs code in choosen language and prints '
+  echo '  output to the command line'
   echo ''
   echo '  cher run path/to/file.js'
   echo ''
-  echo '  Поддерживаемые языки:'
+  echo '  Supported languages:'
   echo '    - JavaScript (Node.js)'
   echo '    - TypeScript (Node.js)'
   echo '    - Golang'
@@ -37,47 +37,47 @@ help () {
   echo '    - PHP'
   echo '    - Haskell'
   echo ''
-  echo '  Варианты:'
+  echo '  Examples:'
   echo '    cher r path/to/file.go'
   echo '    cher r ../../path/to/file.py'
   echo '    cher r /usr/tmp/path/to/File.java'
   echo ''
-  echo 'Команда repl:'
-  echo '  Запускает REPL (read-eval-print-loop) режим в языках'
-  echo '  которые его имеют'
+  echo 'repl command:'
+  echo '  runs REPL (read-eval-print-loop) in languages that have it'
   echo ''
   echo '  cher repl ruby'
   echo ''
-  echo '  Поддерживаемые языки:'
+  echo '  Supported languages:'
   echo '    - JavaScript'
   echo '    - Python'
   echo '    - Ruby'
   echo '    - PHP'
   echo '    - Haskell'
-  echo '  '
-  echo '  Варианты:'
+  echo ''
+  echo '  Examples:'
   echo '    cher repl node'
   echo '    cher e python'
   echo '    cher e ruby'
   echo '    cher e php'
   echo '    cher e haskell'
   echo ''
-  echo 'Команда shell:'
-  echo '  Запускает терминал выбранного языка в контейнере'
-  echo '  с доступом ко всем тулам выбранного языка.'
-  echo '  При этом все файлы текущей директории доступны'
-  echo '  по пути /workdir'
+  echo 'shell command:'
+  echo '  runs cli in docker container.'
+  echo '  In that cli you will have access to all tools'
+  echo '  in the choosen language.'
+  echo '  All files of the current directory are placed'
+  echo '  on `/workdir` path'
   echo ''
   echo '  cher shell rust'
   echo '  cd /workdir'
   echo '  rustc ...'
   echo ''
-  echo '  После языка можно передать привязку портов'
-  echo '  в формате докера - все что принимает параметр -p:'
+  echo '  After language you can pass port mapping'
+  echo '  in docker format - allowed all that applies -p option:'
   echo ''
   echo '  cher shell go 3000:4000'
   echo ''
-  echo '  Поддерживаемые языки:'
+  echo '  Supported languages:'
   echo '    - JavaScript (Node.js)'
   echo '    - Golang'
   echo '    - Rust'
@@ -88,7 +88,7 @@ help () {
   echo '    - PHP'
   echo '    - Haskell'
   echo ''
-  echo '  Варианты:'
+  echo '  Examples:'
   echo '    cher shell node 3000:3000'
   echo '    cher sh go 3000:8080'
   echo '    cher sh rust'
@@ -104,7 +104,7 @@ help () {
 error () {
   echo $1
   echo
-  echo "Для получения справки запустите:"
+  echo "For help run:"
   echo "  cher"
   echo "  cher -h"
   echo "  cher --help"
@@ -116,12 +116,12 @@ run () {
 
   if [[ ! -e $FILEPATH ]]
   then
-    error "Файл $FILEPATH не существует"
+    error "File $FILEPATH doesn't exist"
   fi
 
   if [[ ! -f $FILEPATH ]]
   then
-    error "$FILEPATH не является файлом"
+    error "$FILEPATH isn't a file"
   fi
 
   if [[ $FILEPATH == /* ]]
@@ -132,13 +132,7 @@ run () {
   fi
 
   FILENAME=$(basename "$ABSOLUTE_FILEPATH")
-  # Определяем расширение файла
-  # через удаление самой длинной части подстроки,
-  # удовлетворяющей регулярному выражению *.
   EXTENSION="${FILENAME##*.}"
-  # Определяем имя файла без расширения
-  # через удаление с конца самой короткой части подстроки,
-  # удовлетворяющей регулярному выражению .*
   FILENAME="${FILENAME%.*}"
 
   case $EXTENSION in
@@ -187,10 +181,10 @@ run () {
       COMMAND="cd /app && ghc $FILENAME.hs && ./$FILENAME"
       ;;
     "")
-      error "После run нужно указать путь к файлу"
+      error "Specify path/to/file after run"
       ;;
     *)
-      error "Неизвестное расширение файла $EXTENSION"
+      error "Unknown file $EXTENSION"
       ;;
   esac
 
@@ -233,10 +227,10 @@ repl () {
       COMMAND="ghci"
       ;;
     "")
-      error "После repl нужно указать язык"
+      error "Specify programming language after \"repl\""
       ;;
     *)
-      error "Для языка $1 нет REPL режима"
+      error "There is not REPL mode for $1 language"
       ;;
   esac
 
@@ -293,10 +287,10 @@ shell () {
       SHELL="bash"
       ;;
     "")
-      error "После shell нужно указать язык"
+      error "Specify programming language after \"shell\""
       ;;
     *)
-      error "Для языка $LANGUAGE нет Shell режима"
+      error "There is no Shell for $LANGUAGE language"
       ;;
   esac
 
@@ -311,7 +305,7 @@ shell () {
     $SHELL
 }
 
-# Начало выполнения скрипта
+# Start of script execution
 
 if [[ $# -eq 0 || $1 == "-h" || $1 == "--help" ]]
 then
@@ -330,6 +324,6 @@ case $1 in
     shell $2 $3
     ;;
   *)
-    error "Неизвестная команда $1"
+    error "Unknown command $1"
     ;;
 esac

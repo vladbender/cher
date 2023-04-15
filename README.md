@@ -1,22 +1,22 @@
 # cher
 
-Данная утилита запускает код программ на разных языках без необходимости устанавливать компиляторы и тулинг для каждой программы.
+This tool allows you to run programs written in different languages without the necessity of installing compilers or some other tooling.
 
-## Использование
+## Usage
 
-cher имеет 3 режима работы:
+`cher` has 3 working modes:
 - run
 - repl
 - shell
 
-В режиме **run** запускает код на выбранном языке программирования и выводит результат в консоль:
+In **run** mode `cher` runs code in choosen language and prints output to the command line:
 ```bash
 % ./cher run test_sources/main.rs
 Hello from Rust! Do you know that 2^10 = 1024?
 %
 ```
 
-В режиме **repl** запускает REPL (read-eval-print-loop) в языках которые его имеют:
+In **repl** mode `cher` runs REPL (read-eval-print-loop) in languages that have it:
 ```bash
 % ./cher repl ruby 
 irb(main):002:0> 2**42
@@ -24,7 +24,7 @@ irb(main):002:0> 2**42
 % 
 ```
 
-В режиме **shell** запускает терминал выбранного языка в контейнере с доступом ко всем тулам этого языка. При этом все файлы текущей директории доступны по пути `/workdir`:
+In **shell** mode `cher` runs cli in docker container. In that cli you will have access to all tools in the choosen language. All files of the current directory are placed on `/workdir` path:
 ```bash
 % ./cher shell go
 /go$ cd /workdir/test_sources/
@@ -34,28 +34,28 @@ Hello from Golang!
 %
 ```
 
-## Установка
+## Installation
 
-На Linux и MacOS:
+On Linux or MacOS:
 ```bash
 sudo curl https://raw.githubusercontent.com/vladislavvv/cher/main/cher --output /usr/local/bin/cher
 sudo chmod +x /usr/local/bin/cher
 ```
 
-## Тесты
+## Tests
 
-Можно запустить тесты с простейшими hello world вариантами.
+You can run tests with "Hello, world" programms:
 
-**WARNING!** Будет скачано множество докер образов на каждый язык.
+**WARNING!** It will download a lot of docker images in every language.
 ```bash
 ./test
 ```
 
-## Требования
+## Requirements
 
 - docker
 
-## Поддерживаемые языки
+## Supported languages
 
 - JavaScript (Node.js)
 - TypeScript (Node.js)
@@ -69,5 +69,5 @@ sudo chmod +x /usr/local/bin/cher
 - Haskell
 
 ## TODO
-- Поддержка других языков
-- (?) сlean режим для удаления ненужных образов
+- Other languages
+- (?) сlean mode for deleting unnecessary images
