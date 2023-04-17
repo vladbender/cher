@@ -9,7 +9,7 @@ This tool allows you to run programs written in different languages without the 
 - repl
 - shell
 
-In **run** mode `cher` runs code in choosen language and prints output to the command line:
+In **run** mode `cher` runs code in chosen language and prints output to the command line:
 ```bash
 % ./cher run test_sources/main.rs
 Hello from Rust! Do you know that 2^10 = 1024?
@@ -24,7 +24,7 @@ irb(main):002:0> 2**42
 % 
 ```
 
-In **shell** mode `cher` runs cli in docker container. In that cli you will have access to all tools in the choosen language. All files of the current directory are placed on `/workdir` path:
+In **shell** mode `cher` runs cli in docker container. In that cli you will have access to all tools in the chosen language. All files of the current directory are placed on `/workdir` path:
 ```bash
 % ./cher shell go
 /go$ cd /workdir/test_sources/
@@ -44,7 +44,7 @@ sudo chmod +x /usr/local/bin/cher
 
 ## Tests
 
-You can run tests with "Hello, world" programms:
+You can run tests with "Hello, world" programs:
 
 **WARNING!** It will download a lot of docker images in every language.
 ```bash
